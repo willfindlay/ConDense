@@ -46,3 +46,12 @@ def wrangle(data_file, overwrite, output):
     w = Wrangler.from_csv(data_file)
     w.wrangle()
     w.to_csv(destination=output, overwrite=overwrite)
+
+
+@condense.command(help='Run the data processing pipeline on wrangled data')
+@click.argument('data_file', type=str)
+def process(data_file):
+    from condense.process.process import Processor
+
+    p = Processor.from_csv(data_file)
+    p.conference_stats()
