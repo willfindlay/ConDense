@@ -1,6 +1,7 @@
 from collections import defaultdict
 from typing import Optional, List
 import re
+import os
 
 from pprint import pprint
 
@@ -52,7 +53,12 @@ class Scraper:
             match = re.match(r'([^0-9]*)([0-9]*)', venue)
             venue_name, year = match[1], match[2]
             self.data = self.data.append(
-                {'Venue': venue_name, 'Year': year, 'Authors': authors, 'Title': title},
+                {
+                    'Venue': venue_name,
+                    'Year': year,
+                    'Authors': '; '.join(authors),
+                    'Title': title,
+                },
                 ignore_index=True,
             )
 
@@ -70,11 +76,13 @@ class Scraper:
 
         return (title, authors)
 
-    def save_data(self, destination: str = 'scraped_data.pickle'):
+    def to_csv(self, destination: str, overwrite: bool):
         """
         Save scraped data to destination.
         """
-        from pickle import dump
+        if os.path.exists(destination) and not overwrite:
+            print(f'Cowardly refusing to overwrite existing data {destination}')
+            return
 
-        with open(destination, 'wb') as f:
-            dump(self.data, f)
+        with open(destination, 'w') as f:
+            self.data.to_csv(f, index=False)

@@ -10,12 +10,14 @@ class Wrangler:
         self.data = data
 
     @staticmethod
-    def from_csv(filename: str) -> Wrangler:
+    def from_scrape_file(filename: str) -> Wrangler:
         """
         Initialize the wrangler from a saved scrape file.
         """
-        with open(filename, 'r') as f:
-            data = pd.read_csv(f, keep_default_na=False)
+        from pickle import load
+
+        with open(filename, 'rb') as f:
+            data = load(f)
 
         return Wrangler(data)
 
@@ -29,10 +31,10 @@ class Wrangler:
         self.data['Reference Count'] = np.NaN
 
         # Add an author count per paper
-        self.data['Author Count'] = self.data['Authors'].map(
-            lambda authors: len(authors.split(';'))
-        )
+        self.data['Author Count'] = self.data['Authors'].map(len)
 
+        # Stringify author lists
+        self.data['Authors'] = self.data['Authors'].map(lambda ell: ', '.join(ell))
         # Rename venues
         self.data['Venue'] = self.data['Venue'].map(self._rename_venue)
 
@@ -47,7 +49,7 @@ class Wrangler:
             return 'ACM CCS'
         return venue_name
 
-    def to_csv(self, destination: str, overwrite: bool):
+    def to_csv(self, destination: str = 'wrangled_data.csv', overwrite: bool = False):
         """
         Export results to a CSV file.
         """
@@ -56,3 +58,12 @@ class Wrangler:
             return
         with open(destination, 'w') as f:
             self.data.to_csv(f, index=False)
+
+    # def save_data(self, destination: str = 'wrangled_data.pickle'):
+    #    """
+    #    Save wrangled data to destination.
+    #    """
+    #    from pickle import dump
+
+    #    with open(destination, 'wb') as f:
+    #        dump(self.data, f)
