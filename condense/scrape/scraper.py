@@ -28,14 +28,20 @@ class Scraper:
         if not venues:
             venues = VENUE_URLS.keys()
 
+        print('Scraping venue data...')
+
         # Scrape each venue
         for venue in venues:
             self.do_venue(venue, VENUE_URLS[venue])
+
+        print('All done!')
 
     def do_venue(self, venue: str, url: str):
         """
         Scrape a venue.
         """
+        print(f'Scraping venue {venue} ({url})...')
+
         result = requests.get(url, timeout=10)
         if not result.ok:
             raise Exception(f'Failed to fetch data for {url}')
@@ -65,6 +71,9 @@ class Scraper:
         return (title, authors)
 
     def save_data(self, destination: str = 'scraped_data.pickle'):
+        """
+        Save scraped data to destination.
+        """
         from pickle import dump
 
         with open(destination, 'wb') as f:
