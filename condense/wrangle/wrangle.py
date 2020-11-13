@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import numpy as np
 import pandas as pd
 
 
@@ -23,8 +24,29 @@ class Wrangler:
         """
         Perform additional computations on the data.
         """
+        # Manual classification columns
+        self.data['Classification'] = ''
+        self.data['Area'] = ''
+        self.data['Reference Count'] = np.NaN
+
         # Add an author count per paper
         self.data['Author Count'] = self.data['Authors'].map(len)
+
+        # Stringify author lists
+        self.data['Authors'] = self.data['Authors'].map(lambda ell: ', '.join(ell))
+        # Rename venues
+        self.data['Venue'] = self.data['Venue'].map(self._rename_venue)
+
+    def _rename_venue(self, venue_name: str):
+        if venue_name == 'usenix':
+            return 'USENIX Security'
+        if venue_name == 'oakland':
+            return 'IEEE S&P'
+        if venue_name == 'ndss':
+            return 'NDSS'
+        if venue_name == 'ccs':
+            return 'ACM CCS'
+        return venue_name
 
     def to_csv(self, destination: str = 'wrangled_data.csv'):
         """

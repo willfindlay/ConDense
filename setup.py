@@ -11,7 +11,7 @@ author = 'William Findlay'
 author_email = 'will@ccsl.carleton.ca'
 git = 'https://github.com/willfindlay/ConDense'
 
-requirements = ['click', 'beautifulsoup4', 'requests', 'pandas']
+requirements = ['click', 'beautifulsoup4', 'requests', 'pandas', 'numpy']
 
 entry_points = """
 [console_scripts]
